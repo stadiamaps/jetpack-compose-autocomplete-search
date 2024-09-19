@@ -10,7 +10,7 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  release:
 
     runs-on: macos-13
 
@@ -27,6 +27,9 @@ jobs:
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+
+      - name: Create local.properties (required for CI)
+        run: echo 'apiKey=' >> local.properties
 
       - name: Publish to Maven Central
         run: ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
