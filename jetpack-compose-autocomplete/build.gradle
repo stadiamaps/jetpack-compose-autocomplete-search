@@ -1,0 +1,113 @@
+import com.vanniktech.maven.publish.AndroidMultiVariantLibrary
+import com.vanniktech.maven.publish.SonatypeHost
+
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ktfmt)
+    alias(libs.plugins.mavenPublish)
+}
+
+group = "com.stadiamaps"
+version = "0.0.1"
+
+android {
+    namespace 'com.stadiamaps.autocomplete'
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 26
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    buildFeatures {
+        compose true
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.lifecycle.viewmodel.compose
+    implementation libs.material
+
+    // Compose BOM
+    implementation platform(libs.androidx.compose.bom)
+    androidTestImplementation platform(libs.androidx.compose.bom)
+
+    api libs.stadiamaps
+    implementation libs.moshi.kotlin
+    implementation libs.moshi.adapters
+    implementation libs.okhttp3.logging.interceptor
+    implementation libs.retrofit
+    implementation libs.retrofit.converter.moshi
+    implementation libs.retrofit.converter.scalars
+
+    // Material UI
+    implementation libs.androidx.material3
+
+    // Preview
+    implementation libs.androidx.ui.tooling.preview
+    debugImplementation libs.androidx.ui.tooling
+
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
+}
+
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    signAllPublications()
+
+    configure(new AndroidMultiVariantLibrary(true, true))
+
+    pom {
+        name = "Stadia Maps Autocomplete Search"
+        description = "Geographic autocomplete search for Jetpack Compose"
+
+        url = "https://github.com/stadiamaps/jetpack-compose-autocomplete-search"
+        inceptionYear = "2024"
+        licenses {
+            license {
+                name = "BSD-3-Clause"
+                url = "https://spdx.org/licenses/BSD-3-Clause.html"
+            }
+        }
+        developers {
+            developer {
+                name = "Ian Wagner"
+                organization = "Stadia Maps"
+                organizationUrl = "https://stadiamaps.com/"
+            }
+        }
+        scm {
+            connection = "scm:git:https://github.com/stadiamaps/jetpack-compose-autocomplete-search.git"
+            developerConnection = "scm:git:ssh://github.com/stadiamaps/jetpack-compose-autocomplete-search.git"
+            url = "http://github.com/stadiamaps/jetpack-compose-autocomplete-search"
+        }
+
+        // Google repository (for resolving Compose BOM)
+        withXml {
+            def repo = asNode().appendNode('repositories').appendNode('repository')
+            repo.appendNode('name', 'Google')
+            repo.appendNode('id', 'google')
+            repo.appendNode('url', 'https://maven.google.com/')
+        }
+    }
+}
