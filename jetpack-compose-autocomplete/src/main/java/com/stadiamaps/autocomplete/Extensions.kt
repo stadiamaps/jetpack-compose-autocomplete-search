@@ -1,16 +1,24 @@
 package com.stadiamaps.autocomplete
 
 import android.location.Location
+import com.stadiamaps.api.models.GeoJSONPoint
 import com.stadiamaps.api.models.PeliasGeoJSONFeature
 import com.stadiamaps.api.models.PeliasGeoJSONProperties
 import com.stadiamaps.api.models.PeliasLayer
 
 fun PeliasGeoJSONFeature.center(): Location? =
-    bbox?.let { bbox ->
-      Location("").apply {
-        latitude = (bbox[1] + bbox[3]) / 2
-        longitude = (bbox[0] + bbox[2]) / 2
-      }
+    if (geometry.type == GeoJSONPoint.Type.Point) {
+        Location("").apply {
+            latitude = geometry.coordinates[1]
+            longitude = geometry.coordinates[0]
+        }
+    } else {
+        bbox?.let { bbox ->
+            Location("").apply {
+                latitude = (bbox[1] + bbox[3]) / 2
+                longitude = (bbox[0] + bbox[2]) / 2
+            }
+        }
     }
 
 fun PeliasLayer.icon(): Int =
