@@ -1,6 +1,5 @@
 package com.stadiamaps.autocomplete.demoapp
 
-import android.R.attr.apiKey
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity

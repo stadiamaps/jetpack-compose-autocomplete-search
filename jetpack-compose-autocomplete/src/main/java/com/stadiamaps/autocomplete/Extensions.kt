@@ -8,17 +8,17 @@ import com.stadiamaps.api.models.PeliasLayer
 
 fun PeliasGeoJSONFeature.center(): Location? =
     if (geometry.type == GeoJSONPoint.Type.Point) {
-        Location("").apply {
-            latitude = geometry.coordinates[1]
-            longitude = geometry.coordinates[0]
-        }
+      Location("").apply {
+        latitude = geometry.coordinates[1]
+        longitude = geometry.coordinates[0]
+      }
     } else {
-        bbox?.let { bbox ->
-            Location("").apply {
-                latitude = (bbox[1] + bbox[3]) / 2
-                longitude = (bbox[0] + bbox[2]) / 2
-            }
+      bbox?.let { bbox ->
+        Location("").apply {
+          latitude = (bbox[1] + bbox[3]) / 2
+          longitude = (bbox[0] + bbox[2]) / 2
         }
+      }
     }
 
 fun PeliasLayer.icon(): Int =
