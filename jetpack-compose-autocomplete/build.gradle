@@ -1,4 +1,4 @@
-import com.vanniktech.maven.publish.AndroidMultiVariantLibrary
+import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "com.stadiamaps"
-version = "0.0.3"
+version = "0.0.4"
 
 android {
     namespace 'com.stadiamaps.autocomplete'
@@ -75,7 +75,7 @@ mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
 
-    configure(new AndroidMultiVariantLibrary(true, true))
+    configure(new AndroidSingleVariantLibrary("release", true, true))
 
     pom {
         name = "Stadia Maps Autocomplete Search"
