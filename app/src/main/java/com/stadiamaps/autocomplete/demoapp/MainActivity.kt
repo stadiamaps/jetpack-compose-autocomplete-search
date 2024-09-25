@@ -17,8 +17,8 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val ai = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-    val metaData = ai.metaData
+    val appInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+    val metaData = appInfo.metaData
     val apiKey = metaData.getString("stadiaApiKey")!!
 
     enableEdgeToEdge()

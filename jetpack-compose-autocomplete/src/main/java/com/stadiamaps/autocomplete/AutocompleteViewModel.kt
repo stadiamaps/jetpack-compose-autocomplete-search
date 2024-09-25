@@ -101,7 +101,7 @@ class AutoCompleteViewModel(private val service: GeocodingApi) : ViewModel() {
                       .search(
                           text = query,
                           focusPointLat = userLocation?.latitude,
-                          focusPointLon = userLocation?.latitude,
+                          focusPointLon = userLocation?.longitude,
                           layers = layers)
                       .await()
                       .features
@@ -110,7 +110,7 @@ class AutoCompleteViewModel(private val service: GeocodingApi) : ViewModel() {
                       .autocomplete(
                           text = query,
                           focusPointLat = userLocation?.latitude,
-                          focusPointLon = userLocation?.latitude,
+                          focusPointLon = userLocation?.longitude,
                           layers = layers)
                       .await()
                       .features
