@@ -74,7 +74,7 @@ fun AutocompleteSearch(
 
   Column(modifier = modifier) {
     AutoCompleteSearchBar(
-        query = query,
+        query = query.first,
         onQueryChanged = viewModel::onQueryChanged,
         onSearch = viewModel::onSearch,
         active = isActive,

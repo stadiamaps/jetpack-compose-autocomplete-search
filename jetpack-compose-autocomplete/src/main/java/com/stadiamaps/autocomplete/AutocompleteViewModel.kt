@@ -24,8 +24,8 @@ import retrofit2.await
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class AutoCompleteViewModel(private val service: GeocodingApi) : ViewModel() {
-  private val _query = MutableStateFlow("")
-  val query: StateFlow<String> = _query.asStateFlow()
+  private val _query = MutableStateFlow("" to false)
+  val query: StateFlow<Pair<String, Boolean>> = _query.asStateFlow()
 
   private val _suggestions = MutableStateFlow<List<PeliasGeoJSONFeature>>(emptyList())
   val suggestions: StateFlow<List<PeliasGeoJSONFeature>> = _suggestions.asStateFlow()
@@ -60,19 +60,21 @@ class AutoCompleteViewModel(private val service: GeocodingApi) : ViewModel() {
     viewModelScope.launch(Dispatchers.IO) {
       _query
           .debounce(debounceInterval)
-          .map { it.trim() }
-          .flatMapLatest { query -> fetchSuggestions(query, search = false) }
+          .map { (text, search) ->
+            text.trim() to search
+          }
+          .flatMapLatest { (text, search) -> fetchSuggestions(text, search = search) }
           .collect { suggestions -> _suggestions.value = suggestions }
     }
   }
 
   fun onQueryChanged(newQuery: String) {
-    _query.value = newQuery
+    _query.value = newQuery to false
   }
 
   /** Search when pressing the IME search button; do a deeper search. */
   fun onSearch(query: String) {
-    fetchSuggestions(query, search = true)
+    _query.value = query to true
   }
 
   fun onActiveChange(newActive: Boolean) {
@@ -117,7 +119,7 @@ class AutoCompleteViewModel(private val service: GeocodingApi) : ViewModel() {
                 }
 
             // Avoid emitting updates when the query is stale (more typing)!
-            if (_query.value == query) {
+            if (_query.value == query to search) {
               emit(results)
             }
             _isLoading.value = false
