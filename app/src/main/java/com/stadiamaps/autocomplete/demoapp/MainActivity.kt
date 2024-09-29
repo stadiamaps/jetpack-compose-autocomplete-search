@@ -1,6 +1,5 @@
 package com.stadiamaps.autocomplete.demoapp
 
-import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,9 +16,7 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val appInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-    val metaData = appInfo.metaData
-    val apiKey = metaData.getString("stadiaApiKey")!!
+    val apiKey = BuildConfig.stadiaApiKey
 
     enableEdgeToEdge()
     setContent {

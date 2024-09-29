@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StadiaMapsAutocompleteSearch"
         tools:targetApi="31">
-        <meta-data android:name="stadiaApiKey" android:value="${stadiaApiKey}" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
