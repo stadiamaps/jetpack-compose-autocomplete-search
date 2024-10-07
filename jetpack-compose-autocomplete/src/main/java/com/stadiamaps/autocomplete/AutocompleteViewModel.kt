@@ -1,6 +1,7 @@
 package com.stadiamaps.autocomplete
 
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stadiamaps.api.apis.GeocodingApi
@@ -42,7 +43,7 @@ class AutoCompleteViewModel(private val service: GeocodingApi) : ViewModel() {
    * While a filter of ~3 may make sense for many languages (ex: English), it definitely doesn't for
    * others (ex: Chinese, Japanese, or Korean).
    */
-  var minSearchLength = 0
+  var minSearchLength = 1
 
   /** Waits between subsequent searches until at least this interval has passed. */
   var debounceInterval = 300L
@@ -60,9 +61,7 @@ class AutoCompleteViewModel(private val service: GeocodingApi) : ViewModel() {
     viewModelScope.launch(Dispatchers.IO) {
       _query
           .debounce(debounceInterval)
-          .map { (text, search) ->
-            text.trim() to search
-          }
+          .map { (text, search) -> text.trim() to search }
           .flatMapLatest { (text, search) -> fetchSuggestions(text, search = search) }
           .collect { suggestions -> _suggestions.value = suggestions }
     }
@@ -88,39 +87,46 @@ class AutoCompleteViewModel(private val service: GeocodingApi) : ViewModel() {
   private fun fetchSuggestions(query: String, search: Boolean): Flow<List<PeliasGeoJSONFeature>> =
       flow {
             // TODO: Caching of last N queries?
-            if (query.count() < minSearchLength) {
+            if (query.isBlank() || query.count() < minSearchLength) {
               emit(listOf())
-              _isLoading.value = false
-              return@flow
-            }
+            } else {
+              val layers = limitLayers?.map { it.value }?.let { CollectionFormats.CSVParams(it) }
 
-            val layers = limitLayers?.map { it.value }?.let { CollectionFormats.CSVParams(it) }
+              _isLoading.value = true
+              val results =
+                  try {
+                    if (search) {
+                      service
+                          .search(
+                              text = query,
+                              focusPointLat = userLocation?.latitude,
+                              focusPointLon = userLocation?.longitude,
+                              layers = layers)
+                          .await()
+                          .features
+                    } else {
+                      service
+                          .autocomplete(
+                              text = query,
+                              focusPointLat = userLocation?.latitude,
+                              focusPointLon = userLocation?.longitude,
+                              layers = layers)
+                          .await()
+                          .features
+                    }
+                  } catch (e: Throwable) {
+                    _isLoading.value = false
 
-            _isLoading.value = true
-            val results =
-                if (search) {
-                  service
-                      .search(
-                          text = query,
-                          focusPointLat = userLocation?.latitude,
-                          focusPointLon = userLocation?.longitude,
-                          layers = layers)
-                      .await()
-                      .features
-                } else {
-                  service
-                      .autocomplete(
-                          text = query,
-                          focusPointLat = userLocation?.latitude,
-                          focusPointLon = userLocation?.longitude,
-                          layers = layers)
-                      .await()
-                      .features
-                }
+                    // These failures won't be easily visible deep in a composable; bubble them up
+                    // here.
+                    Log.e("AutocompleteViewModel", "Error loading autocomplete results: $e")
+                    throw e
+                  }
 
-            // Avoid emitting updates when the query is stale (more typing)!
-            if (_query.value == query to search) {
-              emit(results)
+              // Avoid emitting updates when the query is stale (more typing)!
+              if (_query.value == query to search) {
+                emit(results)
+              }
             }
             _isLoading.value = false
           }

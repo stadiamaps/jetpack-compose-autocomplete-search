@@ -1,6 +1,8 @@
 package com.stadiamaps.autocomplete
 
+import android.content.res.Resources
 import android.location.Location
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -15,6 +17,8 @@ import com.stadiamaps.api.infrastructure.ApiClient
 import com.stadiamaps.api.infrastructure.ApiClient.Companion.defaultBasePath
 import com.stadiamaps.api.models.PeliasGeoJSONFeature
 import com.stadiamaps.api.models.PeliasLayer
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
 
 /**
  * An autocomplete search view that finds geographic locations as you type.
@@ -32,6 +36,8 @@ import com.stadiamaps.api.models.PeliasLayer
  * @param debounceInterval Waits between subsequent searches until at least this interval
  *   (milliseconds) has passed.
  * @param onFeatureClicked An optional callback invoked when a result is tapped in the list.
+ * @param resultView An optional composable which replaces the default search result view. Note that
+ *   you are expected to use the modifier as it configures interactivity.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,11 +47,10 @@ fun AutocompleteSearch(
     useEuEndpoint: Boolean = false,
     userLocation: Location? = null,
     limitLayers: List<PeliasLayer>? = null,
-    minSearchLength: Int = 0,
+    minSearchLength: Int = 1,
     debounceInterval: Long = 300,
+    resultView: @Composable ((PeliasGeoJSONFeature, Modifier) -> Unit)? = null,
     onFeatureClicked: (PeliasGeoJSONFeature) -> Unit = {},
-    // TODO: Configurable language
-    // TODO: Composable result view builder
 ) {
   val service =
       remember(apiKey, useEuEndpoint) {
@@ -55,7 +60,27 @@ fun AutocompleteSearch(
             } else {
               defaultBasePath
             }
-        val client = ApiClient(baseUrl = baseUrl)
+        val client =
+            ApiClient(
+                baseUrl = baseUrl,
+                okHttpClientBuilder =
+                    OkHttpClient.Builder()
+                        .addInterceptor(
+                            Interceptor { chain: Interceptor.Chain ->
+                              // Add the accept-language header
+                              val original = chain.request()
+                              val newRequest =
+                                  original
+                                      .newBuilder()
+                                      .header(
+                                          "Accept-Language",
+                                          Resources.getSystem()
+                                              .configuration
+                                              .locales
+                                              .toLanguageTags())
+                                      .build()
+                              chain.proceed(newRequest)
+                            }))
         client.addAuthorization("ApiKeyAuth", ApiKeyAuth("query", "api_key", apiKey))
         client.createService(GeocodingApi::class.java)
       }
@@ -83,9 +108,24 @@ fun AutocompleteSearch(
       if (isActive) {
         SuggestionsDropdown(
             suggestions = suggestions,
-            onFeatureClicked = { feature ->
-              viewModel.onFeatureClicked(feature)
-              onFeatureClicked(feature)
+            resultView = { feature ->
+              if (resultView != null) {
+                resultView(
+                    feature,
+                    Modifier.clickable {
+                      viewModel.onFeatureClicked(feature)
+                      onFeatureClicked(feature)
+                    })
+              } else {
+                SearchResult(
+                    feature,
+                    modifier =
+                        Modifier.clickable {
+                          viewModel.onFeatureClicked(feature)
+                          onFeatureClicked(feature)
+                        },
+                    relativeTo = userLocation)
+              }
             },
             isLoading = isLoading,
         )

@@ -1,7 +1,5 @@
 package com.stadiamaps.autocomplete
 
-import android.location.Location
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,10 +16,9 @@ import com.stadiamaps.api.models.PeliasGeoJSONFeature
 @Composable
 fun SuggestionsDropdown(
     suggestions: List<PeliasGeoJSONFeature>,
-    onFeatureClicked: (PeliasGeoJSONFeature) -> Unit,
     isLoading: Boolean,
+    resultView: @Composable ((PeliasGeoJSONFeature) -> Unit),
     modifier: Modifier = Modifier,
-    relativeTo: Location? = null,
 ) {
   Column(modifier = modifier.verticalScroll(rememberScrollState())) {
     if (isLoading) {
@@ -29,12 +26,6 @@ fun SuggestionsDropdown(
         CircularProgressIndicator(modifier = Modifier.padding(8.dp))
       }
     }
-    suggestions.forEach { feature ->
-      // TODO: Locale customizations
-      SearchResult(
-          feature,
-          modifier = Modifier.clickable { onFeatureClicked(feature) },
-          relativeTo = relativeTo)
-    }
+    suggestions.forEach { feature -> resultView(feature) }
   }
 }
