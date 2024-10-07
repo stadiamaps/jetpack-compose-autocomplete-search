@@ -1,6 +1,8 @@
 package com.stadiamaps.autocomplete.demoapp
 
 import android.os.Bundle
+import android.widget.Toast
+import android.widget.Toast.LENGTH_LONG
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -26,7 +28,7 @@ class MainActivity : ComponentActivity() {
               modifier = Modifier.padding(innerPadding),
               apiKey = apiKey,
           ) {
-            println("Selected ${it.properties?.name} at ${it.center()}")
+            Toast.makeText(baseContext, "Selected ${it.properties?.name} @ ${it.center()}", LENGTH_LONG).show()
           }
         }
       }
