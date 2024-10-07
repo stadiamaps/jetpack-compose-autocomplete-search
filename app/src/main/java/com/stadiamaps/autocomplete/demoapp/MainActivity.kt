@@ -28,7 +28,9 @@ class MainActivity : ComponentActivity() {
               modifier = Modifier.padding(innerPadding),
               apiKey = apiKey,
           ) {
-            Toast.makeText(baseContext, "Selected ${it.properties?.name} @ ${it.center()}", LENGTH_LONG).show()
+            Toast.makeText(
+                    baseContext, "Selected ${it.properties?.name} @ ${it.center()}", LENGTH_LONG)
+                .show()
           }
         }
       }
