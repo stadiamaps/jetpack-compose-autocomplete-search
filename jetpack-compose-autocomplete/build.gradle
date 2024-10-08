@@ -54,6 +54,7 @@ dependencies {
     api libs.stadiamaps
     implementation libs.moshi.kotlin
     implementation libs.moshi.adapters
+    implementation(platform(libs.okhttp.bom))
     implementation libs.okhttp3.logging.interceptor
     implementation libs.retrofit
     implementation libs.retrofit.converter.moshi
