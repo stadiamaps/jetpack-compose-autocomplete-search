@@ -48,11 +48,11 @@ AutocompleteSearch(
   // Replace with your API key; see the demo project for one example of API key embedding
   apiKey = BuildConfig.stadiaApiKey,
   // Optional parameter to bias the location and show distances in results.
-  // This snipped assumes that you have a location property in your view model or similar context.
+  // This snippet assumes that you have a location property in your view model or similar context.
   userLocation = lastLocation.value?.toAndroidLocation()) {
     // Do something with the selection.
     // For example, you might do something like this to start navigation
-    // in an app using Ferrostar (https://github.com/stadiamaps/ferrostar).
+    // in an app using Ferrostar (https://docs.stadiamaps.com/sdks/ferrostar).
     // Fetch a route in the background
     feature.center()?.let { center ->
       // Fetch a route in the background
@@ -71,10 +71,6 @@ AutocompleteSearch(
 
         val route = routes.first()
         viewModel = AppModule.ferrostarCore.startNavigation(route = route)
-
-        if (locationProvider is SimulatedLocationProvider) {
-          locationProvider.setSimulatedRoute(route)
-        }
       }
     }
 }
