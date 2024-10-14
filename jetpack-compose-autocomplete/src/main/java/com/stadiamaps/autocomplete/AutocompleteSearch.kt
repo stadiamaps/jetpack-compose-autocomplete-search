@@ -31,8 +31,8 @@ import okhttp3.OkHttpClient
  *   displays results with (straight-line) distances from this location.
  * @param limitLayers Optionally limits the searched layers to the specified set.
  * @param minSearchLength Requires at least this many characters of input before searching. This can
- *   save API credits, but setting it more than 1 or 2 will be significantly less useful for many
- *   languages.
+ *   save API credits, but setting it higher than 1 or 2 will make the autocomplete functionality
+ *   significantly less useful for some languages.
  * @param debounceInterval Waits between subsequent searches until at least this interval
  *   (milliseconds) has passed.
  * @param onFeatureClicked An optional callback invoked when a result is tapped in the list.
