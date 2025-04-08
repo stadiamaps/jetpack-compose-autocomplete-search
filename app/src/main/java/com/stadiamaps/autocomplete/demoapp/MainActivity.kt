@@ -27,9 +27,11 @@ class MainActivity : ComponentActivity() {
           AutocompleteSearch(
               modifier = Modifier.padding(innerPadding),
               apiKey = apiKey,
-          ) {
+          ) { feature ->
             Toast.makeText(
-                    baseContext, "Selected ${it.properties?.name} @ ${it.center()}", LENGTH_LONG)
+                    baseContext,
+                    "Selected ${feature.properties.name} @ ${feature.center()}",
+                    LENGTH_LONG)
                 .show()
           }
         }

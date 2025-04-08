@@ -15,7 +15,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.stadiamaps.api.models.FeaturePropertiesV2
 import com.stadiamaps.api.models.FeaturePropertiesV2Properties
-import com.stadiamaps.api.models.GeoJSONPoint
 import com.stadiamaps.api.models.Point
 import com.stadiamaps.api.models.Precision
 
@@ -50,8 +49,7 @@ fun SearchResult(
         if (apiDistance != null) {
           val formattedDistance = distanceFormatter.format(apiDistance * 1000.0)
           Text(text = formattedDistance)
-        }
-        else if (relativeTo != null && featureLocation != null) {
+        } else if (relativeTo != null && featureLocation != null) {
           val distance = relativeTo.distanceTo(featureLocation)
           val formattedDistance = distanceFormatter.format(distance.toDouble())
 
@@ -64,24 +62,42 @@ fun SearchResult(
 @Composable
 fun PlainResultPreview() {
   SearchResult(
-    FeaturePropertiesV2(
-      properties = FeaturePropertiesV2Properties(layer = "address", name = "Test", gid = "foo:bar:123", precision = Precision.point)))
+      FeaturePropertiesV2(
+          properties =
+              FeaturePropertiesV2Properties(
+                  layer = "address",
+                  name = "Test",
+                  gid = "foo:bar:123",
+                  precision = Precision.point)))
 }
 
 @Preview("Result with locality", showBackground = true)
 @Composable
 fun ResultWithLocalityPreview() {
   SearchResult(
-    FeaturePropertiesV2(
-      properties = FeaturePropertiesV2Properties(layer = "address", name = "Test", gid = "foo:bar:123", precision = Precision.point, coarseLocation = "Some City, USA")))
+      FeaturePropertiesV2(
+          properties =
+              FeaturePropertiesV2Properties(
+                  layer = "address",
+                  name = "Test",
+                  gid = "foo:bar:123",
+                  precision = Precision.point,
+                  coarseLocation = "Some City, USA")))
 }
 
 @Preview("Relative distance", showBackground = true)
 @Composable
 fun RelativeDistancePreview() {
   SearchResult(
-    FeaturePropertiesV2(
-      properties = FeaturePropertiesV2Properties(layer = "address", name = "Test", gid = "foo:bar:123", precision = Precision.point, coarseLocation = "Some City, USA", distance = 12.0)))
+      FeaturePropertiesV2(
+          properties =
+              FeaturePropertiesV2Properties(
+                  layer = "address",
+                  name = "Test",
+                  gid = "foo:bar:123",
+                  precision = Precision.point,
+                  coarseLocation = "Some City, USA",
+                  distance = 12.0)))
 }
 
 @Preview("Multiple results", showBackground = true)
@@ -89,8 +105,15 @@ fun RelativeDistancePreview() {
 fun MultipleResultsPreview() {
   Column {
     SearchResult(
-      FeaturePropertiesV2(
-        properties = FeaturePropertiesV2Properties(layer = "address", name = "123 some street", gid = "foo:bar:123", precision = Precision.point, coarseLocation = "Some City, USA", distance = 12.0)),
+        FeaturePropertiesV2(
+            properties =
+                FeaturePropertiesV2Properties(
+                    layer = "address",
+                    name = "123 some street",
+                    gid = "foo:bar:123",
+                    precision = Precision.point,
+                    coarseLocation = "Some City, USA",
+                    distance = 12.0)),
         relativeTo =
             Location("").apply {
               latitude = 0.25
@@ -99,23 +122,35 @@ fun MultipleResultsPreview() {
 
     // Legacy for v1 search: should calculate relative distance internally
     SearchResult(
-      FeaturePropertiesV2(
-        properties = FeaturePropertiesV2Properties(layer = "street", name = "Some Street", gid = "foo:bar:456", precision = Precision.point, coarseLocation = "Some City, USA"),
-        geometry = Point(listOf(0.0, 0.0), "Point")
-      ),
-      relativeTo =
-        Location("").apply {
-          latitude = 0.25
-          longitude = 0.25
-        })
+        FeaturePropertiesV2(
+            properties =
+                FeaturePropertiesV2Properties(
+                    layer = "street",
+                    name = "Some Street",
+                    gid = "foo:bar:456",
+                    precision = Precision.point,
+                    coarseLocation = "Some City, USA"),
+            geometry = Point(listOf(0.0, 0.0), "Point")),
+        relativeTo =
+            Location("").apply {
+              latitude = 0.25
+              longitude = 0.25
+            })
 
     SearchResult(
-      FeaturePropertiesV2(
-        properties = FeaturePropertiesV2Properties(layer = "poi", name = "Some Cafe", gid = "foo:bar:789", precision = Precision.point, coarseLocation = "Some City, USA", distance = 16.4)),
-      relativeTo =
-        Location("").apply {
-          latitude = 0.25
-          longitude = 0.25
-        })
+        FeaturePropertiesV2(
+            properties =
+                FeaturePropertiesV2Properties(
+                    layer = "poi",
+                    name = "Some Cafe",
+                    gid = "foo:bar:789",
+                    precision = Precision.point,
+                    coarseLocation = "Some City, USA",
+                    distance = 16.4)),
+        relativeTo =
+            Location("").apply {
+              latitude = 0.25
+              longitude = 0.25
+            })
   }
 }

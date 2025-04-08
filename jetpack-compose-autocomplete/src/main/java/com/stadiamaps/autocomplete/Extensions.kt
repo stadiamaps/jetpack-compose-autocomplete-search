@@ -7,7 +7,6 @@ import com.stadiamaps.api.models.FeaturePropertiesV2
 import com.stadiamaps.api.models.FeaturePropertiesV2Properties
 import com.stadiamaps.api.models.GeocodingGeoJSONFeature
 import com.stadiamaps.api.models.GeocodingGeoJSONProperties
-import com.stadiamaps.api.models.GeocodingLayer
 import com.stadiamaps.api.models.Point
 import com.stadiamaps.api.models.Precision
 import com.stadiamaps.api.models.WofContext
@@ -86,36 +85,57 @@ fun GeocodingGeoJSONProperties.subtitle(): String =
         .filterNotNull()
         .joinToString()
 
-fun contextComponent(gid: String?, name: String?, abbreviation: String? = null): WofContextComponent? =
-  if (gid != null && name != null) {
-    WofContextComponent(gid, name, abbreviation)
-  } else {
-    null
-  }
+fun contextComponent(
+    gid: String?,
+    name: String?,
+    abbreviation: String? = null
+): WofContextComponent? =
+    if (gid != null && name != null) {
+      WofContextComponent(gid, name, abbreviation)
+    } else {
+      null
+    }
 
 fun GeocodingGeoJSONFeature.upcast(): FeaturePropertiesV2? {
   val props = properties ?: return null
   return FeaturePropertiesV2(
-    bbox = bbox,
-    geometry = Point(geometry.coordinates, "Point"),
-    properties = FeaturePropertiesV2Properties(
-      gid = props.gid!!,
-      layer = when (props.layer) {
-        "venue" -> "poi"
-        else -> props.layer!!
-      },
-      name = props.name!!,
-      precision = if (props.accuracy == GeocodingGeoJSONProperties.Accuracy.point) {
-        Precision.point
-      } else {
-        Precision.centroid
-      },
-      addressComponents = AddressComponentsV2(number = props.housenumber, postalCode = props.postalcode, street = props.street),
-      coarseLocation = props.subtitle(),
-      confidence = props.confidence,
-      context = Context(whosonfirst = WofContext(borough = contextComponent(props.boroughGid, props.borough), continent = contextComponent(props.continentGid, props.continent), country = contextComponent(props.countryGid, props.country, props.countryA), county = contextComponent(props.countyGid, props.county), locality = contextComponent(props.localityGid, props.locality), neighbourhood = contextComponent(props.neighbourhoodGid, props.neighbourhood))),
-      distance = null,
-    ),
-    type = "Feature"
-  )
+      bbox = bbox,
+      geometry = Point(geometry.coordinates, "Point"),
+      properties =
+          FeaturePropertiesV2Properties(
+              gid = props.gid!!,
+              layer =
+                  when (props.layer) {
+                    "venue" -> "poi"
+                    else -> props.layer!!
+                  },
+              name = props.name!!,
+              precision =
+                  if (props.accuracy == GeocodingGeoJSONProperties.Accuracy.point) {
+                    Precision.point
+                  } else {
+                    Precision.centroid
+                  },
+              addressComponents =
+                  AddressComponentsV2(
+                      number = props.housenumber,
+                      postalCode = props.postalcode,
+                      street = props.street),
+              coarseLocation = props.subtitle(),
+              confidence = props.confidence,
+              context =
+                  Context(
+                      whosonfirst =
+                          WofContext(
+                              borough = contextComponent(props.boroughGid, props.borough),
+                              continent = contextComponent(props.continentGid, props.continent),
+                              country =
+                                  contextComponent(props.countryGid, props.country, props.countryA),
+                              county = contextComponent(props.countyGid, props.county),
+                              locality = contextComponent(props.localityGid, props.locality),
+                              neighbourhood =
+                                  contextComponent(props.neighbourhoodGid, props.neighbourhood))),
+              distance = null,
+          ),
+      type = "Feature")
 }

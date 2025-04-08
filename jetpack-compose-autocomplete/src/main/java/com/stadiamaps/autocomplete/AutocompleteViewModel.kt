@@ -87,7 +87,11 @@ class AutoCompleteViewModel(private val service: GeocodingApi) : ViewModel() {
       return feature
     } else {
       // Look up the feature using the place details API
-      return service.placeDetailsV2(CollectionFormats.CSVParams(feature.properties.gid)).await().features.first()
+      return service
+          .placeDetailsV2(CollectionFormats.CSVParams(feature.properties.gid))
+          .await()
+          .features
+          .first()
     }
   }
 
@@ -111,7 +115,7 @@ class AutoCompleteViewModel(private val service: GeocodingApi) : ViewModel() {
                               layers = layers)
                           .await()
                           .features
-                        .mapNotNull { it.upcast() }
+                          .mapNotNull { it.upcast() }
                     } else {
                       service
                           .autocompleteV2(

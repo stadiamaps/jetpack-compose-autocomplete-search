@@ -49,7 +49,7 @@ AutocompleteSearch(
   apiKey = BuildConfig.stadiaApiKey,
   // Optional parameter to bias the location and show distances in results.
   // This snippet assumes that you have a location property in your view model or similar context.
-  userLocation = lastLocation.value?.toAndroidLocation()) {
+  userLocation = lastLocation.value?.toAndroidLocation()) { feature ->
     // Do something with the selection.
     // For example, you might do something like this to start navigation
     // in an app using Ferrostar (https://docs.stadiamaps.com/sdks/ferrostar).

@@ -112,22 +112,18 @@ fun AutocompleteSearch(
         SuggestionsDropdown(
             suggestions = suggestions,
             resultView = { feature ->
-              val clickModifier = Modifier.clickable {
-                coroutineScope.launch {
-                  val detailFeature = viewModel.onFeatureClicked(feature)
-                  onFeatureClicked(detailFeature)
-                }
-              }
+              val clickModifier =
+                  Modifier.clickable {
+                    coroutineScope.launch {
+                      val detailFeature = viewModel.onFeatureClicked(feature)
+                      onFeatureClicked(detailFeature)
+                    }
+                  }
 
               if (resultView != null) {
-                resultView(
-                    feature,
-                    clickModifier)
+                resultView(feature, clickModifier)
               } else {
-                SearchResult(
-                    feature,
-                    modifier = clickModifier,
-                    relativeTo = userLocation)
+                SearchResult(feature, modifier = clickModifier, relativeTo = userLocation)
               }
             },
             isLoading = isLoading,
