@@ -9,14 +9,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.stadiamaps.api.apis.GeocodingApi
+import com.stadiamaps.api.GeocodingApi
 import com.stadiamaps.api.auth.ApiKeyAuth
 import com.stadiamaps.api.infrastructure.ApiClient
 import com.stadiamaps.api.infrastructure.ApiClient.Companion.defaultBasePath
-import com.stadiamaps.api.models.PeliasGeoJSONFeature
-import com.stadiamaps.api.models.PeliasLayer
+import com.stadiamaps.api.models.FeaturePropertiesV2
+import com.stadiamaps.api.models.LayerId
+import kotlinx.coroutines.launch
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 
@@ -46,11 +48,11 @@ fun AutocompleteSearch(
     apiKey: String,
     useEuEndpoint: Boolean = false,
     userLocation: Location? = null,
-    limitLayers: List<PeliasLayer>? = null,
+    limitLayers: List<LayerId>? = null,
     minSearchLength: Int = 1,
     debounceInterval: Long = 300,
-    resultView: @Composable ((PeliasGeoJSONFeature, Modifier) -> Unit)? = null,
-    onFeatureClicked: (PeliasGeoJSONFeature) -> Unit = {},
+    resultView: @Composable ((FeaturePropertiesV2, Modifier) -> Unit)? = null,
+    onFeatureClicked: (FeaturePropertiesV2) -> Unit = {},
 ) {
   val service =
       remember(apiKey, useEuEndpoint) {
@@ -86,6 +88,7 @@ fun AutocompleteSearch(
       }
 
   val viewModel: AutoCompleteViewModel = viewModel { AutoCompleteViewModel(service) }
+  val coroutineScope = rememberCoroutineScope()
 
   viewModel.userLocation = userLocation
   viewModel.minSearchLength = minSearchLength
@@ -109,21 +112,21 @@ fun AutocompleteSearch(
         SuggestionsDropdown(
             suggestions = suggestions,
             resultView = { feature ->
+              val clickModifier = Modifier.clickable {
+                coroutineScope.launch {
+                  val detailFeature = viewModel.onFeatureClicked(feature)
+                  onFeatureClicked(detailFeature)
+                }
+              }
+
               if (resultView != null) {
                 resultView(
                     feature,
-                    Modifier.clickable {
-                      viewModel.onFeatureClicked(feature)
-                      onFeatureClicked(feature)
-                    })
+                    clickModifier)
               } else {
                 SearchResult(
                     feature,
-                    modifier =
-                        Modifier.clickable {
-                          viewModel.onFeatureClicked(feature)
-                          onFeatureClicked(feature)
-                        },
+                    modifier = clickModifier,
                     relativeTo = userLocation)
               }
             },

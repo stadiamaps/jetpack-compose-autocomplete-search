@@ -4,10 +4,10 @@ import android.location.Location
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.stadiamaps.api.apis.GeocodingApi
+import com.stadiamaps.api.GeocodingApi
 import com.stadiamaps.api.infrastructure.CollectionFormats
-import com.stadiamaps.api.models.PeliasGeoJSONFeature
-import com.stadiamaps.api.models.PeliasLayer
+import com.stadiamaps.api.models.FeaturePropertiesV2
+import com.stadiamaps.api.models.LayerId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -28,8 +28,8 @@ class AutoCompleteViewModel(private val service: GeocodingApi) : ViewModel() {
   private val _query = MutableStateFlow("" to false)
   val query: StateFlow<Pair<String, Boolean>> = _query.asStateFlow()
 
-  private val _suggestions = MutableStateFlow<List<PeliasGeoJSONFeature>>(emptyList())
-  val suggestions: StateFlow<List<PeliasGeoJSONFeature>> = _suggestions.asStateFlow()
+  private val _suggestions = MutableStateFlow<List<FeaturePropertiesV2>>(emptyList())
+  val suggestions: StateFlow<List<FeaturePropertiesV2>> = _suggestions.asStateFlow()
 
   private val _isActive = MutableStateFlow(false)
   val isActive: StateFlow<Boolean> = _isActive.asStateFlow()
@@ -55,7 +55,7 @@ class AutoCompleteViewModel(private val service: GeocodingApi) : ViewModel() {
   var userLocation: Location? = null
 
   /** Optionally limits the searched layers to the specified set. */
-  var limitLayers: List<PeliasLayer>? = null
+  var limitLayers: List<LayerId>? = null
 
   init {
     viewModelScope.launch(Dispatchers.IO) {
@@ -80,11 +80,18 @@ class AutoCompleteViewModel(private val service: GeocodingApi) : ViewModel() {
     _isActive.value = newActive
   }
 
-  fun onFeatureClicked(feature: PeliasGeoJSONFeature) {
+  suspend fun onFeatureClicked(feature: FeaturePropertiesV2): FeaturePropertiesV2 {
     onActiveChange(false)
+
+    if (feature.geometry != null) {
+      return feature
+    } else {
+      // Look up the feature using the place details API
+      return service.placeDetailsV2(CollectionFormats.CSVParams(feature.properties.gid)).await().features.first()
+    }
   }
 
-  private fun fetchSuggestions(query: String, search: Boolean): Flow<List<PeliasGeoJSONFeature>> =
+  private fun fetchSuggestions(query: String, search: Boolean): Flow<List<FeaturePropertiesV2>> =
       flow {
             // TODO: Caching of last N queries?
             if (query.isBlank() || query.count() < minSearchLength) {
@@ -104,9 +111,10 @@ class AutoCompleteViewModel(private val service: GeocodingApi) : ViewModel() {
                               layers = layers)
                           .await()
                           .features
+                        .mapNotNull { it.upcast() }
                     } else {
                       service
-                          .autocomplete(
+                          .autocompleteV2(
                               text = query,
                               focusPointLat = userLocation?.latitude,
                               focusPointLon = userLocation?.longitude,

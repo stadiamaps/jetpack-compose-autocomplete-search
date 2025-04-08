@@ -11,13 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.stadiamaps.api.models.PeliasGeoJSONFeature
+import com.stadiamaps.api.models.FeaturePropertiesV2
 
 @Composable
 fun SuggestionsDropdown(
-    suggestions: List<PeliasGeoJSONFeature>,
+    suggestions: List<FeaturePropertiesV2>,
     isLoading: Boolean,
-    resultView: @Composable ((PeliasGeoJSONFeature) -> Unit),
+    resultView: @Composable ((FeaturePropertiesV2) -> Unit),
     modifier: Modifier = Modifier,
 ) {
   Column(modifier = modifier.verticalScroll(rememberScrollState())) {

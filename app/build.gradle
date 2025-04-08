@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace 'com.stadiamaps.autocomplete.demoapp'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.stadiamaps.autocomplete.demoapp"
