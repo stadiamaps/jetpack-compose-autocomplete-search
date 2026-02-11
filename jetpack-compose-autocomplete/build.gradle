@@ -1,16 +1,16 @@
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
-import com.vanniktech.maven.publish.SonatypeHost
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ktfmt)
     alias(libs.plugins.mavenPublish)
 }
 
 group = "com.stadiamaps"
-version = "3.0.0"
+version = "3.0.0-SNAPSHOT"
 
 android {
     namespace 'com.stadiamaps.autocomplete'
@@ -29,15 +29,22 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     buildFeatures {
         compose true
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = '1.8'
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.fromTarget("1.8")
+        languageVersion = KotlinVersion.fromVersion("2.2")
+        apiVersion = KotlinVersion.fromVersion("2.2")
     }
 }
 
@@ -73,7 +80,7 @@ dependencies {
 }
 
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral()
     signAllPublications()
 
     configure(new AndroidSingleVariantLibrary("release", true, true))
