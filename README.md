@@ -18,13 +18,13 @@ First, add the library to your project using your preferred build system.
 Gradle (Groovy):
 
 ```groovy
-implementation 'com.stadiamaps:jetpack-compose-autocomplete:2.0.0'
+implementation 'com.stadiamaps:jetpack-compose-autocomplete:3.0.0'
 ```
 
 Gradle (Kotlin):
 
 ```kotlin
-implementation("com.stadiamaps:jetpack-compose-autocomplete:2.0.0")
+implementation("com.stadiamaps:jetpack-compose-autocomplete:3.0.0")
 ```
 
 You can find more examples on [Maven Central](https://central.sonatype.com/artifact/com.stadiamaps/jetpack-compose-autocomplete).
