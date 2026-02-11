@@ -41,7 +41,7 @@ import okhttp3.OkHttpClient
  * @param resultView An optional composable which replaces the default search result view. Note that
  *   you are expected to use the modifier as it configures interactivity.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @Composable
 fun AutocompleteSearch(
     modifier: Modifier = Modifier,

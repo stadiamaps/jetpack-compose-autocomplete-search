@@ -10,7 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @Composable
 fun AutoCompleteSearchBar(
     query: String,

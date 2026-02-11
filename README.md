@@ -29,6 +29,13 @@ implementation("com.stadiamaps:jetpack-compose-autocomplete:2.0.0")
 
 You can find more examples on [Maven Central](https://central.sonatype.com/artifact/com.stadiamaps/jetpack-compose-autocomplete).
 
+NOTE: This project uses Material 3 Search Composables.
+These are marked as experimental upstream, but we use them anyways,
+because the user experience is so vastly superior to hand-rolled alternatives.
+Even using stable APIs, issues frequently arise from differing Jetpack Compose BOM versions at runtime,
+so you must ensure that your version is relatively close to ours.
+See [`libs.versions.toml`](gradle/libs.versions.toml) for details.
+
 ## Getting an API key
 
 You will need an API key to use this composable.

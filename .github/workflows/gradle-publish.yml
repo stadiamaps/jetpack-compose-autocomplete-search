@@ -9,7 +9,7 @@ on:
 jobs:
   release:
 
-    runs-on: macos-13
+    runs-on: ubuntu-latest
 
     steps:
       - name: Check out repo

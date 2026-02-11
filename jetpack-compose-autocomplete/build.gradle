@@ -10,11 +10,11 @@ plugins {
 }
 
 group = "com.stadiamaps"
-version = "2.0.0"
+version = "3.0.0"
 
 android {
     namespace 'com.stadiamaps.autocomplete'
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         minSdk 26
